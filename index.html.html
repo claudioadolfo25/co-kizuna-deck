@@ -1,0 +1,300 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#deck{font-family:system-ui,sans-serif;background:#020a12;color:#e8f4ff;min-height:600px;position:relative;overflow:hidden}
+canvas#bg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.slides{position:relative;z-index:2}
+.slide{display:none;min-height:520px;padding:3rem 2.5rem 2rem;animation:fadeIn .4s ease}
+.slide.active{display:flex;flex-direction:column;justify-content:center}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.nav{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;border-bottom:0.5px solid rgba(100,200,255,0.15)}
+.nav-brand{font-size:13px;font-weight:500;color:#4db8ff;letter-spacing:.08em}
+.nav-steps{display:flex;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(100,180,255,.25);cursor:pointer;transition:background .2s}
+.dot.active{background:#4db8ff}
+.nav-arrows{display:flex;gap:8px}
+.arrow{background:rgba(100,180,255,.1);border:0.5px solid rgba(100,180,255,.3);color:#4db8ff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:background .2s}
+.arrow:hover{background:rgba(100,180,255,.2)}
+.tag{display:inline-block;font-size:11px;font-weight:500;letter-spacing:.1em;color:#4db8ff;border:0.5px solid rgba(77,184,255,.4);padding:3px 10px;border-radius:4px;margin-bottom:1.2rem;text-transform:uppercase}
+h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:300;line-height:1.15;color:#f0f8ff;margin-bottom:1rem}
+h1 em{font-style:normal;color:#4db8ff}
+h2{font-size:clamp(1.4rem,3.5vw,2rem);font-weight:300;color:#f0f8ff;line-height:1.3;margin-bottom:1.2rem}
+h2 em{font-style:normal;color:#4db8ff}
+.sub{font-size:15px;color:rgba(200,220,255,.6);line-height:1.7;max-width:600px;margin-bottom:2rem}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:1.5rem 0}
+.metric{background:rgba(100,180,255,.06);border:0.5px solid rgba(100,180,255,.2);border-radius:10px;padding:1rem;text-align:center}
+.metric .val{font-size:1.8rem;font-weight:300;color:#4db8ff;line-height:1.1}
+.metric .lbl{font-size:11px;color:rgba(180,210,255,.5);margin-top:4px;letter-spacing:.05em}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:1.5rem 0}
+.card{background:rgba(100,180,255,.05);border:0.5px solid rgba(100,180,255,.15);border-radius:10px;padding:1.1rem}
+.card h3{font-size:14px;font-weight:500;color:#a8d8ff;margin-bottom:.5rem}
+.card p{font-size:13px;color:rgba(180,210,255,.55);line-height:1.6}
+.bar-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.bar-lbl{font-size:12px;color:rgba(180,210,255,.6);width:90px;flex-shrink:0}
+.bar-track{flex:1;height:6px;background:rgba(100,180,255,.1);border-radius:3px}
+.bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#1a5fa0,#4db8ff)}
+.bar-val{font-size:12px;color:#4db8ff;width:60px;text-align:right;flex-shrink:0}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.pill{background:rgba(100,180,255,.08);border:0.5px solid rgba(100,180,255,.25);border-radius:20px;padding:5px 14px;font-size:13px;color:#a8d8ff}
+.pill.hi{background:rgba(100,180,255,.15);color:#4db8ff;border-color:rgba(100,180,255,.4)}
+.timeline{position:relative;padding-left:20px;margin:1rem 0}
+.timeline::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:1px;background:rgba(100,180,255,.2)}
+.tline{position:relative;margin-bottom:1.2rem}
+.tline::before{content:'';position:absolute;left:-17px;top:5px;width:7px;height:7px;border-radius:50%;background:#4db8ff}
+.tline .tyr{font-size:12px;color:#4db8ff;margin-bottom:2px}
+.tline p{font-size:13px;color:rgba(180,210,255,.6);line-height:1.5}
+.law-box{background:rgba(77,184,255,.07);border:0.5px solid rgba(77,184,255,.3);border-radius:10px;padding:1.1rem 1.4rem;margin:1rem 0}
+.law-box .law-tag{font-size:11px;color:#4db8ff;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem}
+.law-box p{font-size:14px;color:rgba(200,225,255,.7);line-height:1.6}
+.cta-btn{display:inline-block;background:rgba(77,184,255,.15);border:0.5px solid rgba(77,184,255,.5);color:#4db8ff;padding:.7rem 1.8rem;border-radius:8px;font-size:14px;cursor:pointer;text-decoration:none;transition:background .2s;margin-top:1rem}
+.cta-btn:hover{background:rgba(77,184,255,.25)}
+.slide-num{font-size:12px;color:rgba(100,180,255,.4);margin-bottom:.5rem}
+.divider{height:0.5px;background:rgba(100,180,255,.12);margin:1.2rem 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+@media(max-width:540px){.two-col{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
+</style>
+
+<div id="deck">
+<canvas id="bg"></canvas>
+
+<div class="nav">
+  <span class="nav-brand">co-kizuna · investor deck 2026</span>
+  <div class="nav-steps" id="dots"></div>
+  <div class="nav-arrows">
+    <button class="arrow" id="prev">&#8592;</button>
+    <button class="arrow" id="next">&#8594;</button>
+  </div>
+</div>
+
+<div class="slides" id="slides">
+
+<div class="slide active" id="s0">
+  <div class="tag">Clean Life SpA · co-kizuna.com</div>
+  <h1>El mercado público<br>latinoamericano,<br><em>legible por fin</em></h1>
+  <p class="sub">$200B+ USD anuales en datos abiertos que el 99% de quienes operan en ese mercado no sabe leer. Nosotros sí.</p>
+  <div class="metrics">
+    <div class="metric"><div class="val">$23B</div><div class="lbl">USD Chile 2024</div></div>
+    <div class="metric"><div class="val">$70B</div><div class="lbl">USD acumulados</div></div>
+    <div class="metric"><div class="val">120K</div><div class="lbl">proveedores</div></div>
+    <div class="metric"><div class="val">5-7</div><div class="lbl">años horizonte</div></div>
+  </div>
+  <p style="font-size:12px;color:rgba(100,180,255,.35);margin-top:1rem">AI-driven small team · una persona + agentes de IA construyendo el futuro</p>
+</div>
+
+<div class="slide" id="s1">
+  <div class="slide-num">01 / el problema</div>
+  <h2>120.000 proveedores.<br><em>Decisiones ciegas.</em></h2>
+  <p class="sub">El 90% son MIPYMES. Participan en un mercado de $23B USD con datos desordenados, sin contexto histórico, sin inteligencia competitiva.</p>
+  <div class="divider"></div>
+  <div class="two-col">
+    <div>
+      <p style="font-size:13px;color:rgba(180,210,255,.5);margin-bottom:.8rem">Lo que tienen hoy</p>
+      <div class="pill-row">
+        <span class="pill">CSVs sin estructura</span>
+        <span class="pill">Sin historial de precios</span>
+        <span class="pill">Sin alertas</span>
+        <span class="pill">Sin inteligencia rival</span>
+        <span class="pill">Decisiones manuales</span>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:13px;color:rgba(180,210,255,.5);margin-bottom:.8rem">Lo que necesitan</p>
+      <div class="pill-row">
+        <span class="pill hi">Señales predictivas</span>
+        <span class="pill hi">Precios históricos p10-p90</span>
+        <span class="pill hi">Alertas en tiempo real</span>
+        <span class="pill hi">Grafos de competidores</span>
+        <span class="pill hi">Integración en su flujo</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s2">
+  <div class="slide-num">02 / el mercado</div>
+  <h2>Datos abiertos.<br><em>Obligatorios por ley.</em></h2>
+  <p class="sub">OCDS (Open Contracting Data Standard) — adoptado por 50+ países. Chile lleva 11 años publicando el 100% de sus contratos.</p>
+  <div class="bar-row"><span class="bar-lbl">Chile</span><div class="bar-track"><div class="bar-fill" style="width:11.5%"></div></div><span class="bar-val">$23B/año</span></div>
+  <div class="bar-row"><span class="bar-lbl">Colombia</span><div class="bar-track"><div class="bar-fill" style="width:30%"></div></div><span class="bar-val">~$60B/año</span></div>
+  <div class="bar-row"><span class="bar-lbl">México</span><div class="bar-track"><div class="bar-fill" style="width:50%"></div></div><span class="bar-val">~$80B/año</span></div>
+  <div class="bar-row"><span class="bar-lbl">Brasil</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val">~$200B/año</span></div>
+  <div class="law-box">
+    <div class="law-tag">Ley 21.634 · dic 2024</div>
+    <p>Todos los organismos del Estado chileno deben publicar datos de compras en formatos abiertos. No es una tendencia — es una obligación legal permanente. El viento de cola ya está activo.</p>
+  </div>
+</div>
+
+<div class="slide" id="s3">
+  <div class="slide-num">03 / la solución</div>
+  <h2>Una ontología operacional.<br><em>No un dashboard.</em></h2>
+  <p class="sub">En filosofía, lo que Palantir construyó para gobiernos y corporaciones globales — aplicado al ecosistema de licitaciones latinoamericano.</p>
+  <div class="cards">
+    <div class="card"><h3>QuiverCL</h3><p>Inteligencia de licitaciones activas. Alertas y scoring de oportunidades.</p></div>
+    <div class="card"><h3>ContourCL</h3><p>Tendencias de mercado y precios históricos p10–p90 por rubro.</p></div>
+    <div class="card"><h3>ObjectExplorerCL</h3><p>Grafos Neo4j de relaciones entre proveedores y entidades públicas.</p></div>
+    <div class="card"><h3>Servidor MCP</h3><p>La inteligencia viaja al cliente. Integración en ERP, CRM, Excel, Claude, Cursor.</p></div>
+  </div>
+  <p style="font-size:13px;color:rgba(180,210,255,.45);margin-top:.5rem">El proveedor no viene a nosotros — nuestra inteligencia va a donde él trabaja.</p>
+</div>
+
+<div class="slide" id="s4">
+  <div class="slide-num">04 / tracción</div>
+  <h2>Infraestructura en<br><em>producción hoy.</em></h2>
+  <p class="sub">Esto no es una idea. Es una plataforma operativa con datos reales.</p>
+  <div class="metrics">
+    <div class="metric"><div class="val">10M+</div><div class="lbl">registros procesados</div></div>
+    <div class="metric"><div class="val">86K</div><div class="lbl">licitaciones indexadas</div></div>
+    <div class="metric"><div class="val">4.88M</div><div class="lbl">órdenes de compra</div></div>
+    <div class="metric"><div class="val">228K</div><div class="lbl">precios referencia</div></div>
+  </div>
+  <div class="pill-row">
+    <span class="pill hi">Oracle Cloud</span>
+    <span class="pill hi">PostgreSQL 16</span>
+    <span class="pill hi">Neo4j 5.20</span>
+    <span class="pill hi">LLM local Ollama</span>
+    <span class="pill hi">Next.js 14</span>
+    <span class="pill hi">FastMCP</span>
+  </div>
+</div>
+
+<div class="slide" id="s5">
+  <div class="slide-num">05 / modelo de negocio</div>
+  <h2>SaaS con<br><em>retención conductual.</em></h2>
+  <p class="sub">Cada proveedor que gana una licitación con co-kizuna vuelve. Cada victoria refuerza el hábito. Esa mecánica no se diseña — se descubre cuando el producto funciona.</p>
+  <div class="divider"></div>
+  <div class="cards">
+    <div class="card"><h3>Gratuito</h3><p>Acceso básico. Generación de demanda y adquisición orgánica de usuarios.</p></div>
+    <div class="card"><h3>Pro</h3><p>Módulos avanzados, alertas, análisis histórico completo. Motor de conversión.</p></div>
+    <div class="card"><h3>Enterprise</h3><p>Integración MCP, API completa, soporte dedicado. Contrato anual.</p></div>
+  </div>
+  <p style="font-size:13px;color:rgba(180,210,255,.45);margin-top:.5rem">120.000 proveedores en Chile. 90% MIPYMES sin herramienta de inteligencia hoy.</p>
+</div>
+
+<div class="slide" id="s6">
+  <div class="slide-num">06 / roadmap</div>
+  <h2>Uso del<br><em>financiamiento.</em></h2>
+  <div class="timeline">
+    <div class="tline"><div class="tyr">Frente 1 · inmediato</div><p>Cobertura completa de datos 2009–2026 con actualización en tiempo real. Base histórica completa como ventaja competitiva sostenible.</p></div>
+    <div class="tline"><div class="tyr">Frente 2 · Q3 2026</div><p>Marketplace de conectores MCP para integración empresarial. MiroFish — agente autónomo de predicción de licitaciones en producción.</p></div>
+    <div class="tline"><div class="tyr">Frente 3 · año 2</div><p>Expansión a Perú, Colombia y México bajo el mismo estándar OCDS. El mismo producto, mercados con la misma estructura de datos.</p></div>
+  </div>
+  <div class="law-box">
+    <div class="law-tag">Ventaja estructural</div>
+    <p>OCDS es el mismo estándar en todos los países objetivo. Lo que construimos en Chile se despliega en Latinoamérica sin reescribir la ontología.</p>
+  </div>
+</div>
+
+<div class="slide" id="s7">
+  <div class="slide-num">07 / el equipo</div>
+  <h2>AI-driven small team.<br><em>Precisión quirúrgica.</em></h2>
+  <p class="sub">Una persona y agentes de inteligencia artificial operando como un equipo de veinte. Sin runway quemado en estructura. Velocidad de ejecución sin fricción organizacional.</p>
+  <div class="divider"></div>
+  <div class="cards">
+    <div class="card"><h3>Founder</h3><p>Clean Life SpA · co-kizuna.com · cleantransparency.org. Feature engineering sobre gasto público.</p></div>
+    <div class="card"><h3>Agentes IA</h3><p>163 personalidades HiClaw. Orquestación Airflow. Modelos Ollama locales. Sin dependencia cloud.</p></div>
+    <div class="card"><h3>Stack propio</h3><p>SDK Python tipado. Servidor MCP. Neo4j + PostgreSQL + Oracle ADB. Todo en producción.</p></div>
+  </div>
+</div>
+
+<div class="slide" id="s8">
+  <div class="slide-num">08 / la oportunidad</div>
+  <h2>$200B USD en datos<br><em>que ya existen.</em></h2>
+  <p class="sub">El mercado existe. Los datos son públicos y obligatorios por ley. La infraestructura está construida. Lo que se busca es acelerar.</p>
+  <div class="metrics">
+    <div class="metric"><div class="val">5–7</div><div class="lbl">años horizonte</div></div>
+    <div class="metric"><div class="val">50+</div><div class="lbl">países OCDS</div></div>
+    <div class="metric"><div class="val">$200B</div><div class="lbl">USD TAM Latam</div></div>
+    <div class="metric"><div class="val">0</div><div class="lbl">competidores directos</div></div>
+  </div>
+  <div class="law-box">
+    <div class="law-tag">Para el inversor</div>
+    <p>Horizonte 5–7 años, exactamente su ventana declarada. Mercado concreto. Tecnología diferenciadora en producción. Expansión regional sin reescribir el producto. El viento de cola legal ya está activo e irreversible.</p>
+  </div>
+</div>
+
+<div class="slide" id="s9">
+  <h2>Construyamos esto<br><em>juntos.</em></h2>
+  <p class="sub">Si esta oportunidad le interesa, compartimos el deck completo, proyecciones financieras y una demostración técnica en vivo a su conveniencia.</p>
+  <div class="pill-row" style="margin-top:1rem">
+    <span class="pill hi">cleantransparency.org</span>
+    <span class="pill hi">co-kizuna.com</span>
+  </div>
+  <a class="cta-btn" onclick="sendPrompt('Quiero preparar las proyecciones financieras para el deck de co-kizuna')">Preparar proyecciones financieras ↗</a>
+  <a class="cta-btn" style="margin-left:8px" onclick="sendPrompt('Genera el pitch de 60 segundos para co-kizuna')">Generar pitch de 60 seg ↗</a>
+  <p style="font-size:12px;color:rgba(100,180,255,.3);margin-top:2rem">Clean Life SpA · co-kizuna.com · cleantransparency.org</p>
+</div>
+
+</div>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const dotsC=document.getElementById('dots');
+let cur=0;
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>go(i);
+  dotsC.appendChild(d);
+});
+function go(n){
+  slides[cur].classList.remove('active');
+  dotsC.children[cur].classList.remove('active');
+  cur=(n+slides.length)%slides.length;
+  slides[cur].classList.add('active');
+  dotsC.children[cur].classList.add('active');
+}
+document.getElementById('next').onclick=()=>go(cur+1);
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')go(cur+1);
+  if(e.key==='ArrowLeft')go(cur-1);
+});
+
+const canvas=document.getElementById('bg');
+const ctx=canvas.getContext('2d');
+let W,H,pts=[],frame;
+function resize(){
+  W=canvas.width=canvas.offsetWidth;
+  H=canvas.height=canvas.offsetHeight||600;
+}
+function initPts(){
+  pts=[];
+  const n=Math.floor(W*H/9000)+40;
+  for(let i=0;i<n;i++){
+    pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.5+.5});
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#020a12';
+  ctx.fillRect(0,0,W,H);
+  for(let i=0;i<pts.length;i++){
+    const p=pts[i];
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+    if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(77,160,255,.55)';
+    ctx.fill();
+    for(let j=i+1;j<pts.length;j++){
+      const q=pts[j];
+      const dx=p.x-q.x,dy=p.y-q.y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){
+        ctx.beginPath();
+        ctx.moveTo(p.x,p.y);
+        ctx.lineTo(q.x,q.y);
+        ctx.strokeStyle=`rgba(77,160,255,${.18*(1-d/120)})`;
+        ctx.lineWidth=.5;
+        ctx.stroke();
+      }
+    }
+  }
+  frame=requestAnimationFrame(draw);
+}
+const obs=new ResizeObserver(()=>{resize();initPts()});
+obs.observe(canvas.parentElement);
+resize();initPts();draw();
+</script>
